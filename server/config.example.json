@@ -1,0 +1,11 @@
+{
+  "username": "admin",
+  "password": "admin",
+  "control_port": 8024,
+  "global_allowed_ports": "1000-20000",
+  "client_ip_whitelist": "",
+  "client_ip_blacklist": "",
+  "visitor_ip_whitelist": "",
+  "visitor_ip_blacklist": "",
+  "visitor_redirect_url": ""
+}
