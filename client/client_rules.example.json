@@ -1,0 +1,12 @@
+[
+  {
+    "local_port": 80,
+    "remote_host": "127.0.0.1",
+    "remote_port": 8080
+  },
+  {
+    "local_port": 443,
+    "remote_host": "example.com",
+    "remote_port": 443
+  }
+]
