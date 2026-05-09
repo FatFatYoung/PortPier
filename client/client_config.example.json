@@ -1,0 +1,6 @@
+{
+  "server_host": "your-server.com",
+  "server_port": 8024,
+  "client_id": "my-client",
+  "token": "your-secret-token"
+}
