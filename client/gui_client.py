@@ -1222,6 +1222,13 @@ class ClientGUI:
         # 保存当前状态
         was_connected = self.client and self.client.connected if self.client else False
         
+        # 1. 保存日志内容
+        saved_logs = ""
+        if hasattr(self, 'log_text'):
+            self.log_text.configure(state=NORMAL)
+            saved_logs = self.log_text.get("1.0", END)
+            self.log_text.configure(state=DISABLED)
+        
         # 清空界面
         for widget in self.root.winfo_children():
             widget.destroy()
@@ -1233,8 +1240,12 @@ class ClientGUI:
         self._create_ui()
         
         # 恢复日志
-        self._log_message(f"[{i18n.t('language')}] {i18n.get_lang().upper()}")
-        
+        if hasattr(self, 'log_text') and saved_logs:
+            self.log_text.configure(state=NORMAL)
+            self.log_text.insert("1.0", saved_logs)
+            self.log_text.see(END)
+            self.log_text.configure(state=DISABLED)
+            
         # 刷新配置显示
         self._refresh_config_display()
         
