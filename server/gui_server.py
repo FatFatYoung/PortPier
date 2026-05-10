@@ -1287,6 +1287,13 @@ class ServerGUI:
         # 保存当前状态
         was_running = self.server_running
         
+        # 1. 保存日志内容
+        saved_logs = ""
+        if hasattr(self, 'log_text'):
+            self.log_text.configure(state=NORMAL)
+            saved_logs = self.log_text.get("1.0", END)
+            self.log_text.configure(state=DISABLED)
+        
         # 清空界面
         for widget in self.root.winfo_children():
             widget.destroy()
@@ -1304,6 +1311,17 @@ class ServerGUI:
         
         # 刷新数据
         self._load_data()
+        
+        # 2. 恢复日志内容
+        if hasattr(self, 'log_text') and saved_logs:
+            self.log_text.configure(state=NORMAL)
+            self.log_text.insert("1.0", saved_logs)
+            self.log_text.see(END) # 滚动到底部
+            self.log_text.configure(state=DISABLED)
+            
+        # 3. 刷新防火墙日志（因为读取的是系统文件，刷新能保证最新）
+        if hasattr(self, '_refresh_firewall_logs'):
+            self._refresh_firewall_logs()
         
     def _create_right_panel(self, parent):
         # 标题栏
