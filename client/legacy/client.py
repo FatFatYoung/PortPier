@@ -1,3 +1,15 @@
+"""
+[DEPRECATED] 已停止维护 (Archived)
+推荐版本: GUI Version (gui_client.py)
+
+此版本缺少 GUI 版（V1.0+）的以下特性：
+- 可视化规则管理
+- 自动重连机制的可视化反馈
+- 语言切换支持
+- 实时连接日志界面
+
+本代码仅作为早期参考保留。
+"""
 import asyncio
 import sys
 import json
