@@ -1,3 +1,17 @@
+"""
+[DEPRECATED] 已停止维护 (Archived)
+推荐版本: GUI Version (gui_server.py)
+
+此版本仅包含基础的 TCP 转发和 Web 管理功能。
+不包含 GUI 版（V1.0+）的高级特性，例如：
+- 防火墙日志读取
+- IP 黑白名单访问控制
+- 客户端连接独占模式
+- 64KB 缓冲区优化
+- TCP Keepalive
+
+本代码仅作为早期架构参考保留，请勿用于生产环境。
+"""
 import asyncio
 import sys
 import json
