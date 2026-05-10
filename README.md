@@ -31,29 +31,22 @@
 
 ```
 PortPier/
-├── .github/workflows/build.yml   # GitHub Actions 自动构建
-├── server/                        # 服务端
-│   ├── gui_server.py             # GUI 管理界面
-│   ├── server.py                 # 原版 Web 管理界面
-│   ├── common.py                 # 协议编解码模块
+├── server/                        # 服务端 (GUI 版本)
+│   ├── gui_server.py             # GUI 管理界面 (推荐)
 │   ├── i18n.py                   # 国际化模块
 │   ├── build.bat                 # 打包脚本
-│   └── config.example.json       # 配置文件示例
-├── client/                        # 客户端
-│   ├── gui_client.py             # GUI 客户端
-│   ├── client.py                 # 原版命令行客户端
-│   ├── common.py                 # 协议编解码模块
+│   └── legacy/                   # 旧版 Web 管理端 (仅供参考)
+│       ├── server.py
+│       └── common.py
+├── client/                        # 客户端 (GUI 版本)
+│   ├── gui_client.py             # GUI 客户端 (推荐)
 │   ├── i18n.py                   # 国际化模块
 │   ├── build.bat                 # 打包脚本
-│   └── client_config.example.json
+│   └── legacy/                   # 旧版命令行客户端 (仅供参考)
+│       ├── client.py
+│       └── common.py
 ├── docs/                          # 文档
-├── .gitignore
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── LICENSE
-├── QUICKSTART.md
-├── RELEASE.md
-└── README.md
+...
 ```
 
 ## 🚀 快速开始
@@ -111,6 +104,10 @@ python gui_client.py
 
 ## 📝 更新日志
 
+### v1.2.0 (2026-05-10)
+- ✨ **体验优化**: 语言切换时保留历史日志，不再清空
+- ✨ **体验优化**: 自动刷新防火墙日志状态
+
 ### v1.1.0 (2026-05-08)
 - 🌐 中英双语支持（完整界面国际化）
 - 📝 日志消息国际化
@@ -140,7 +137,9 @@ python gui_client.py
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
+本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
+
+第三方开源组件声明请参见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 ## 📧 联系方式
 
