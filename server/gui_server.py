@@ -78,6 +78,31 @@ def verify_secret(secret: str, salt_b64: str, hash_b64: str) -> bool:
     return key == stored_hash
 
 # ---------- 配置文件加载 ----------
+def resolve_visitor_ip(peer_ip: str, first_data: bytes, trusted_proxies: str) -> str:
+    """解析访客真实 IP。
+
+    仅当 TCP 直连对端属于 trusted_proxies（反向代理）时才采信
+    X-Real-Ip / X-Forwarded-For 头；否则一律使用 TCP 对端地址——
+    这些头部任何客户端都能伪造，盲目采信会导致 IP 黑白名单被绕过。
+    """
+    if not trusted_proxies:
+        return peer_ip
+    if not is_ip_allowed(peer_ip, trusted_proxies, ''):
+        return peer_ip
+    try:
+        text = first_data.decode('utf-8', errors='ignore')
+        if text.startswith(('GET ', 'POST ', 'PUT ', 'DELETE ', 'HEAD ', 'OPTIONS ')):
+            for line in text.split('\r\n'):
+                ll = line.lower()
+                if ll.startswith('x-real-ip:'):
+                    return line.split(':', 1)[1].strip()
+                if ll.startswith('x-forwarded-for:'):
+                    return line.split(':', 1)[1].strip().split(',')[0].strip()
+    except Exception:
+        pass
+    return peer_ip
+
+
 def is_ip_allowed(ip: str, whitelist: str, blacklist: str) -> bool:
     """检查 IP 是否在白名单中且不在黑名单中
     
@@ -184,7 +209,8 @@ def load_config():
             "client_ip_blacklist": "",      # 客户端IP黑名单
             "visitor_ip_whitelist": "",     # 访客IP白名单，空表示允许所有
             "visitor_ip_blacklist": "",     # 访客IP黑名单
-            "visitor_redirect_url": ""      # 被拒绝访客的跳转URL
+            "visitor_redirect_url": "",      # 被拒绝访客的跳转URL
+            "trusted_proxies": ""      # 可信代理（仅这些来源的 XFF 头可信）
         }
         save_config(default)
         return default
@@ -196,6 +222,7 @@ def load_config():
         cfg.setdefault("visitor_ip_whitelist", "")
         cfg.setdefault("visitor_ip_blacklist", "")
         cfg.setdefault("visitor_redirect_url", "")
+        cfg.setdefault("trusted_proxies", "")
         return cfg
 
 def save_config(config):
@@ -440,23 +467,10 @@ class ClientHandler:
                     writer.close()
                     return
                 
-                # 尝试从 HTTP 头部获取真实 IP
-                real_ip = visitor_ip
-                try:
-                    text = first_data.decode('utf-8', errors='ignore')
-                    if text.startswith(('GET ', 'POST ', 'PUT ', 'DELETE ', 'HEAD ', 'OPTIONS ')):
-                        for line in text.split('\r\n'):
-                            ll = line.lower()
-                            if ll.startswith('x-real-ip:'):
-                                real_ip = line.split(':', 1)[1].strip()
-                            elif ll.startswith('x-forwarded-for:'):
-                                real_ip = line.split(':', 1)[1].strip().split(',')[0].strip()
-                except:
-                    pass
-                
-                # 使用真实 IP 进行检查
-                if real_ip != visitor_ip:
-                    visitor_ip = real_ip
+                # 真实 IP 解析：仅当 TCP 对端是配置的可信代理时才采信
+                # X-Real-Ip / X-Forwarded-For 头；否则一律用 TCP 对端地址，防止伪造头绕过 IP 名单
+                visitor_ip = resolve_visitor_ip(visitor_ip, first_data,
+                                                load_config().get('trusted_proxies', ''))
                 
                 # 检查访客 IP 白名单/黑名单
                 current_config = load_config()
@@ -544,13 +558,11 @@ class ClientHandler:
                         ll = line.lower()
                         if ll.startswith('host:'):
                             http_host = line.split(':', 1)[1].strip()
-                        elif ll.startswith('x-real-ip:'):
-                            real_ip = line.split(':', 1)[1].strip()
-                        elif ll.startswith('x-forwarded-for:'):
-                            real_ip = line.split(':', 1)[1].strip().split(',')[0].strip()
             except:
                 pass
         
+        real_ip = resolve_visitor_ip(client_ip, first_data,
+                                        self.config.get('trusted_proxies', ''))
         if real_ip != client_ip:
             self.log_callback(i18n.t("log_visitor", ip=real_ip, port=client_port, public_port=rule['public_port']))
             if http_method:
@@ -1083,7 +1095,15 @@ class ServerGUI:
         
         # 保存按钮
         btn_frame = Frame(content, bg=self.colors['white'])
-        btn_frame.grid(row=21, column=0, columnspan=2, pady=20)
+        # 可信代理（仅这些来源的 XFF 头可信）
+        Label(content, text=i18n.t("trusted_proxies"), font=('Microsoft YaHei UI', 10),
+              bg=self.colors['white']).grid(row=21, column=0, sticky=W, pady=5)
+        self.trusted_proxies_var = StringVar()
+        Entry(content, textvariable=self.trusted_proxies_var, font=('Microsoft YaHei UI', 10),
+              width=40).grid(row=21, column=1, sticky=W, padx=10)
+        Label(content, text=i18n.t("trusted_proxies_hint"), font=('Microsoft YaHei UI', 8),
+              bg=self.colors['white'], fg='#999').grid(row=22, column=1, sticky=W, padx=10)
+        btn_frame.grid(row=23, column=0, columnspan=2, pady=20)
         
         Button(btn_frame, text=i18n.t("btn_save_settings"), bg=self.colors['success'], fg='white',
                font=('Microsoft YaHei UI', 10, 'bold'), command=self._save_settings,
@@ -1381,6 +1401,7 @@ class ServerGUI:
         self.visitor_ip_whitelist_var.set(config.get('visitor_ip_whitelist', ''))
         self.visitor_ip_blacklist_var.set(config.get('visitor_ip_blacklist', ''))
         self.visitor_redirect_url_var.set(config.get('visitor_redirect_url', ''))
+        self.trusted_proxies_var.set(config.get('trusted_proxies', ''))
         self._refresh_clients()
         self.log(i18n.t("log_config_loaded"))
         
@@ -1571,6 +1592,7 @@ class ServerGUI:
         config['visitor_ip_whitelist'] = self.visitor_ip_whitelist_var.get().strip()
         config['visitor_ip_blacklist'] = self.visitor_ip_blacklist_var.get().strip()
         config['visitor_redirect_url'] = self.visitor_redirect_url_var.get().strip()
+        config['trusted_proxies'] = self.trusted_proxies_var.get().strip()
         save_config(config)
         self.log(i18n.t("log_settings_saved"), 'success')
         self.log(i18n.t("log_ip_settings_saved"), 'success')

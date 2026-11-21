@@ -89,6 +89,8 @@ TRANSLATIONS = {
         "ip_whitelist_hint": "空=允许所有 | 格式: IP/CIDR/范围",
         "ip_blacklist_hint": "空=不阻止 | 格式: IP/范围",
         "redirect_hint": "被拒绝的访客将跳转到此URL",
+        "trusted_proxies": "可信代理 IP（仅这些来源的 XFF 头可信）:",
+        "trusted_proxies_hint": "逗号分隔 IP/CIDR/范围；留空则永不采信 XFF 头",
         
         # 防火墙日志
         "firewall_refresh": "刷新日志",
@@ -241,6 +243,8 @@ TRANSLATIONS = {
         "ip_whitelist_hint": "Empty=Allow All | Format: IP/CIDR/Range",
         "ip_blacklist_hint": "Empty=Block None | Format: IP/Range",
         "redirect_hint": "Denied visitors will be redirected to this URL",
+        "trusted_proxies": "Trusted Proxy IPs (XFF headers only trusted from these):",
+        "trusted_proxies_hint": "Comma-separated IPs/CIDR/ranges; empty = never trust forwarded headers",
         
         # Firewall log
         "firewall_refresh": "Refresh Log",
