@@ -101,6 +101,16 @@ python gui_client.py
 - 所有密码使用 PBKDF2 算法加密存储
 - 支持 IP 白名单/黑名单访问控制
 - 支持 TCP Keepalive 防止连接超时
+- 支持 TLS 加密（`tls_enabled`，保护口令与隧道数据）
+- 客户端口令仅存 PBKDF2 哈希，历史明文加载时自动清除
+- X-Forwarded-For / X-Real-Ip 仅在来源为 `trusted_proxies` 时采信，防止伪造绕过 IP 名单
+- 单包长度上限 + 流队列有界，防恶意声明超大包耗尽内存
+
+**TLS 配置（两端 config.json）：**
+
+- 服务端：`tls_enabled: true` + `tls_certfile` / `tls_keyfile`（PEM）；缺证书时拒绝启动，绝不降级明文
+- 客户端：`tls_enabled: true` + 可选 `tls_ca_file`（留空用系统 CA）；`tls_insecure_skip_verify: true` 为显式跳过校验（仍加密不认证）
+- 反向代理部署：`trusted_proxies` 填代理 IP/CIDR/范围，只有这些来源的 XFF 头才可信；留空永不采信
 
 ## 📝 更新日志
 

@@ -5,6 +5,18 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 并且本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [未发布]
+
+### 安全
+- 🔒 **内存耗尽防护** - 数据包声明长度设 1 MiB 上限，流队列改为有界队列
+- 🔒 **明文口令清理** - `allowed_clients.json` 不再保存明文 token，历史明文加载时自动清除
+- 🔒 **XFF 伪造防护** - `X-Forwarded-For`/`X-Real-Ip` 仅在来源为 `trusted_proxies` 时采信
+- 🔒 **TLS 加密** - 控制通道与隧道数据可选 TLS（服务端证书/私钥，客户端 CA 校验）
+
+### 修复
+- 🐛 修复 gui_client.py 引用已搬移 common 模块导致无法启动的问题
+- 🐛 修复鉴权失败路径 `logging` 未导入导致的 NameError
+
 ## [1.2.0] - 2026-05-10
 
 ### 改进
