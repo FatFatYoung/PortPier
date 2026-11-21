@@ -221,7 +221,16 @@ def load_allowed_clients():
         save_allowed_clients({})
         return {}
     with open(ALLOWED_CLIENTS_FILE, 'r') as f:
-        return json.load(f)
+        clients = json.load(f)
+    # 安全加固：旧版本曾把 token 明文写入本文件，加载时一律清除并回写
+    changed = False
+    for info in clients.values():
+        if isinstance(info, dict) and 'token' in info:
+            info.pop('token', None)
+            changed = True
+    if changed:
+        save_allowed_clients(clients)
+    return clients
 
 def save_allowed_clients(clients):
     with open(ALLOWED_CLIENTS_FILE, 'w') as f:
@@ -1465,7 +1474,6 @@ class ServerGUI:
             clients[client_id] = {
                 'salt': salt,
                 'token_hash': token_hash,
-                'token': token,
                 'allowed_ports': allowed_ports
             }
             save_allowed_clients(clients)
