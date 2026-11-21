@@ -9,7 +9,6 @@ import json
 import os
 import hashlib
 import base64
-import struct
 import threading
 import time
 import socket
@@ -47,22 +46,9 @@ def global_exception_handler(exc_type, exc_value, exc_traceback):
 
 sys.excepthook = global_exception_handler
 
-# 协议常量
-HEADER_FORMAT = '!II'
-HEADER_SIZE = struct.calcsize(HEADER_FORMAT)
-
-def encode_packet(stream_id: int, data: bytes) -> bytes:
-    return struct.pack(HEADER_FORMAT, stream_id, len(data)) + data
-
-def decode_packet(data: bytes):
-    if len(data) < HEADER_SIZE:
-        return None, None, data
-    stream_id, data_len = struct.unpack(HEADER_FORMAT, data[:HEADER_SIZE])
-    if len(data) < HEADER_SIZE + data_len:
-        return None, None, data
-    packet_data = data[HEADER_SIZE:HEADER_SIZE+data_len]
-    remaining = data[HEADER_SIZE+data_len:]
-    return stream_id, packet_data, remaining
+# 协议编解码与 TLS 工具（共享模块，含单包长度上限防护）
+from common import (encode_packet, decode_packet, build_server_ssl_context,
+                    STREAM_QUEUE_MAXSIZE)
 
 # 路径处理
 # 获取程序所在目录（打包后使用 exe 所在目录）
@@ -391,7 +377,7 @@ class ClientHandler:
             addr = f"{rule['target_host']}:{rule['target_port']}".encode()
             self.writer.write(encode_packet(stream_id, addr))
             await self.writer.drain()
-            q = asyncio.Queue()
+            q = asyncio.Queue(maxsize=STREAM_QUEUE_MAXSIZE)
             self.stream_queues[stream_id] = q
             asyncio.create_task(self._handle_local(rule, stream_id, q))
             self.log_callback(i18n.t("log_rule_added", port=rule['public_port'], host=rule['target_host'], target_port=rule['target_port']))
@@ -502,7 +488,7 @@ class ClientHandler:
                 conn_stream_id = self.next_stream_id
                 
                 # 创建独立的队列
-                conn_queue = asyncio.Queue()
+                conn_queue = asyncio.Queue(maxsize=STREAM_QUEUE_MAXSIZE)
                 self.stream_queues[conn_stream_id] = conn_queue
                 
                 # 发送连接地址给客户端

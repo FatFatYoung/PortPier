@@ -17,7 +17,7 @@ import os
 import hashlib
 import base64
 from aiohttp import web
-from common import encode_packet, decode_packet, logger
+from common import encode_packet, decode_packet, logger, STREAM_QUEUE_MAXSIZE
 
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -171,7 +171,7 @@ class Client:
                         continue
                     q = self.stream_queues.get(stream_id)
                     if q is None:
-                        q = asyncio.Queue()
+                        q = asyncio.Queue(maxsize=STREAM_QUEUE_MAXSIZE)
                         self.stream_queues[stream_id] = q
                         task = asyncio.create_task(self._handle_stream(stream_id, q))
                         self.stream_tasks[stream_id] = task

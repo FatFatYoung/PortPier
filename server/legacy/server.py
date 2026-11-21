@@ -19,7 +19,7 @@ import os
 import hashlib
 import base64
 from aiohttp import web
-from common import encode_packet, decode_packet, logger
+from common import encode_packet, decode_packet, logger, STREAM_QUEUE_MAXSIZE
 
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -217,7 +217,7 @@ class ClientHandler:
     async def open_stream(self):
         stream_id = self.next_stream_id
         self.next_stream_id += 1
-        q = asyncio.Queue()
+        q = asyncio.Queue(maxsize=STREAM_QUEUE_MAXSIZE)
         self.stream_queues[stream_id] = q
         return stream_id, q
 

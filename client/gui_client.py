@@ -48,7 +48,8 @@ else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 导入通用模块
-from common import encode_packet, decode_packet
+from common import (encode_packet, decode_packet, build_client_ssl_context,
+                    STREAM_QUEUE_MAXSIZE)
 
 # ==================== 配置管理 ====================
 
@@ -385,7 +386,7 @@ class Client:
                         continue
                     q = self.stream_queues.get(stream_id)
                     if q is None:
-                        q = asyncio.Queue()
+                        q = asyncio.Queue(maxsize=STREAM_QUEUE_MAXSIZE)
                         self.stream_queues[stream_id] = q
                         task = asyncio.create_task(self._handle_stream(stream_id, q))
                         self.stream_tasks[stream_id] = task
