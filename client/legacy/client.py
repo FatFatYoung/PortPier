@@ -17,7 +17,7 @@ import os
 import hashlib
 import base64
 from aiohttp import web
-from common import encode_packet, decode_packet, logger, STREAM_QUEUE_MAXSIZE
+from common import encode_packet, decode_packet, logger, STREAM_QUEUE_MAXSIZE, build_client_ssl_context
 
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -98,7 +98,11 @@ class Client:
         host = self.config['server_host']
         port = self.config['server_port']
         self.logger.info(f"连接服务端 {host}:{port} ...")
-        self.reader, self.writer = await asyncio.open_connection(host, port)
+        ssl_ctx = None
+        if config.get('tls_enabled'):
+            ssl_ctx = build_client_ssl_context(config.get('tls_ca_file', ''),
+                                               bool(config.get('tls_insecure_skip_verify', False)))
+        self.reader, self.writer = await asyncio.open_connection(host, port, ssl=ssl_ctx)
         self.writer.write(f"{self.config['client_id']}\n".encode())
         await self.writer.drain()
         self.writer.write(f"{self.config['token']}\n".encode())

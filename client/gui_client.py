@@ -90,7 +90,10 @@ def load_client_config():
             "server_host": "127.0.0.1",
             "server_port": 8024,
             "client_id": "mypc",
-            "token": "your_token_here"
+            "token": "your_token_here",
+            "tls_enabled": False,
+            "tls_ca_file": "",
+            "tls_insecure_skip_verify": False
         }
         save_client_config(default)
         return default
@@ -143,8 +146,13 @@ class Client:
         self.log(i18n.t("log_connect_server", host=host, port=port))
         try:
             # 添加连接超时（30秒）
+            ssl_ctx = None
+            if self.config.get('tls_enabled'):
+                ssl_ctx = build_client_ssl_context(
+                    self.config.get('tls_ca_file', ''),
+                    bool(self.config.get('tls_insecure_skip_verify', False)))
             self.reader, self.writer = await asyncio.wait_for(
-                asyncio.open_connection(host, port),
+                asyncio.open_connection(host, port, ssl=ssl_ctx),
                 timeout=30
             )
             
@@ -266,8 +274,13 @@ class Client:
             port = self.config['server_port']
             
             # 使用 wait_for 添加超时，支持取消
+            ssl_ctx = None
+            if self.config.get('tls_enabled'):
+                ssl_ctx = build_client_ssl_context(
+                    self.config.get('tls_ca_file', ''),
+                    bool(self.config.get('tls_insecure_skip_verify', False)))
             self.reader, self.writer = await asyncio.wait_for(
-                asyncio.open_connection(host, port),
+                asyncio.open_connection(host, port, ssl=ssl_ctx),
                 timeout=10  # 10秒连接超时
             )
             
@@ -1003,7 +1016,7 @@ class ClientGUI:
         """显示设置对话框"""
         dialog = Toplevel(self.root)
         dialog.title(i18n.t("settings_title"))
-        dialog.geometry("450x300")
+        dialog.geometry("450x420")
         dialog.transient(self.root)
         dialog.grab_set()
         
@@ -1028,12 +1041,24 @@ class ClientGUI:
             self.config['server_port'] = int(port_var.get())
             self.config['client_id'] = id_var.get()
             self.config['token'] = token_var.get()
+            self.config['tls_enabled'] = bool(tls_var.get())
+            self.config['tls_ca_file'] = ca_var.get().strip()
+            self.config['tls_insecure_skip_verify'] = bool(insecure_var.get())
             save_client_config(self.config)
             self._refresh_config_display()
             messagebox.showinfo("Success", i18n.t("settings_saved"))
             dialog.destroy()
         
-        Button(dialog, text=i18n.t("settings_save"), bg='#27ae60', fg='white', font=('Microsoft YaHei UI', 10), command=save).grid(row=4, column=0, columnspan=2, pady=20)
+        tls_var = BooleanVar(value=bool(self.config.get('tls_enabled', False)))
+        Checkbutton(dialog, variable=tls_var, text=i18n.t("tls_enabled"),
+                    font=('Microsoft YaHei UI', 10)).grid(row=4, column=0, columnspan=2, sticky=W, padx=10, pady=10)
+        Label(dialog, text=i18n.t("tls_ca_file"), font=('Microsoft YaHei UI', 10)).grid(row=5, column=0, sticky=W, padx=10, pady=10)
+        ca_var = StringVar(value=self.config.get('tls_ca_file', ''))
+        Entry(dialog, textvariable=ca_var, width=30, font=('Microsoft YaHei UI', 10)).grid(row=5, column=1, padx=10, pady=10)
+        insecure_var = BooleanVar(value=bool(self.config.get('tls_insecure_skip_verify', False)))
+        Checkbutton(dialog, variable=insecure_var, text=i18n.t("tls_insecure"),
+                    font=('Microsoft YaHei UI', 10)).grid(row=6, column=0, columnspan=2, sticky=W, padx=10, pady=10)
+        Button(dialog, text=i18n.t("settings_save"), bg='#27ae60', fg='white', font=('Microsoft YaHei UI', 10), command=save).grid(row=7, column=0, columnspan=2, pady=20)
     
     def _show_rules(self):
         """显示规则管理对话框"""

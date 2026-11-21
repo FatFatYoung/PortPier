@@ -19,7 +19,7 @@ import os
 import hashlib
 import base64
 from aiohttp import web
-from common import encode_packet, decode_packet, logger, STREAM_QUEUE_MAXSIZE
+from common import encode_packet, decode_packet, logger, STREAM_QUEUE_MAXSIZE, build_server_ssl_context
 
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -547,7 +547,11 @@ async def auth_middleware(request, handler):
 
 async def main():
     global app
-    control_server = await asyncio.start_server(control_handler, '0.0.0.0', 8024)
+    ssl_ctx = None
+    if config.get('tls_enabled'):
+        ssl_ctx = build_server_ssl_context(config.get('tls_certfile', ''),
+                                           config.get('tls_keyfile', ''))
+    control_server = await asyncio.start_server(control_handler, '0.0.0.0', 8024, ssl=ssl_ctx)
     logger.info("控制端口 0.0.0.0:8024 已启动")
     app = web.Application(middlewares=[auth_middleware])
     app.router.add_get('/', admin_index)

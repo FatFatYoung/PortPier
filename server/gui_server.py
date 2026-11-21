@@ -12,6 +12,7 @@ import base64
 import threading
 import time
 import socket
+import logging
 from datetime import datetime
 from tkinter import *
 from tkinter import ttk, messagebox, scrolledtext
@@ -210,7 +211,10 @@ def load_config():
             "visitor_ip_whitelist": "",     # 访客IP白名单，空表示允许所有
             "visitor_ip_blacklist": "",     # 访客IP黑名单
             "visitor_redirect_url": "",      # 被拒绝访客的跳转URL
-            "trusted_proxies": ""      # 可信代理（仅这些来源的 XFF 头可信）
+            "trusted_proxies": "",     # 可信代理（仅这些来源的 XFF 头可信）
+            "tls_enabled": False,
+            "tls_certfile": "",
+            "tls_keyfile": ""       # TLS 证书/私钥 (PEM)
         }
         save_config(default)
         return default
@@ -223,6 +227,9 @@ def load_config():
         cfg.setdefault("visitor_ip_blacklist", "")
         cfg.setdefault("visitor_redirect_url", "")
         cfg.setdefault("trusted_proxies", "")
+        cfg.setdefault("tls_enabled", False)
+        cfg.setdefault("tls_certfile", "")
+        cfg.setdefault("tls_keyfile", "")
         return cfg
 
 def save_config(config):
@@ -1094,6 +1101,24 @@ class ServerGUI:
               bg=self.colors['white'], fg='#999').grid(row=20, column=1, sticky=W, padx=10)
         
         # 保存按钮
+        # TLS 加密
+        Label(content, text=i18n.t("tls_title"), font=('Microsoft YaHei UI', 12, 'bold'),
+              bg=self.colors['white'], fg=self.colors['text']).grid(row=23, column=0, columnspan=2, sticky=W, pady=(15, 5))
+        self.tls_enabled_var = BooleanVar(value=bool(config.get('tls_enabled', False)))
+        Checkbutton(content, text=i18n.t("tls_enabled"), variable=self.tls_enabled_var,
+                    bg=self.colors['white'], font=('Microsoft YaHei UI', 10)).grid(row=24, column=0, columnspan=2, sticky=W, pady=5)
+        Label(content, text=i18n.t("tls_certfile"), font=('Microsoft YaHei UI', 10),
+              bg=self.colors['white']).grid(row=25, column=0, sticky=W, pady=5)
+        self.tls_certfile_var = StringVar()
+        Entry(content, textvariable=self.tls_certfile_var, font=('Microsoft YaHei UI', 10),
+              width=40).grid(row=25, column=1, sticky=W, padx=10)
+        Label(content, text=i18n.t("tls_keyfile"), font=('Microsoft YaHei UI', 10),
+              bg=self.colors['white']).grid(row=26, column=0, sticky=W, pady=5)
+        self.tls_keyfile_var = StringVar()
+        Entry(content, textvariable=self.tls_keyfile_var, font=('Microsoft YaHei UI', 10),
+              width=40).grid(row=26, column=1, sticky=W, padx=10)
+        Label(content, text=i18n.t("tls_hint"), font=('Microsoft YaHei UI', 8),
+              bg=self.colors['white'], fg='#999').grid(row=27, column=1, sticky=W, padx=10)
         btn_frame = Frame(content, bg=self.colors['white'])
         # 可信代理（仅这些来源的 XFF 头可信）
         Label(content, text=i18n.t("trusted_proxies"), font=('Microsoft YaHei UI', 10),
@@ -1103,7 +1128,7 @@ class ServerGUI:
               width=40).grid(row=21, column=1, sticky=W, padx=10)
         Label(content, text=i18n.t("trusted_proxies_hint"), font=('Microsoft YaHei UI', 8),
               bg=self.colors['white'], fg='#999').grid(row=22, column=1, sticky=W, padx=10)
-        btn_frame.grid(row=23, column=0, columnspan=2, pady=20)
+        btn_frame.grid(row=28, column=0, columnspan=2, pady=20)
         
         Button(btn_frame, text=i18n.t("btn_save_settings"), bg=self.colors['success'], fg='white',
                font=('Microsoft YaHei UI', 10, 'bold'), command=self._save_settings,
@@ -1402,6 +1427,9 @@ class ServerGUI:
         self.visitor_ip_blacklist_var.set(config.get('visitor_ip_blacklist', ''))
         self.visitor_redirect_url_var.set(config.get('visitor_redirect_url', ''))
         self.trusted_proxies_var.set(config.get('trusted_proxies', ''))
+        self.tls_enabled_var.set(bool(config.get('tls_enabled', False)))
+        self.tls_certfile_var.set(config.get('tls_certfile', ''))
+        self.tls_keyfile_var.set(config.get('tls_keyfile', ''))
         self._refresh_clients()
         self.log(i18n.t("log_config_loaded"))
         
@@ -1593,6 +1621,9 @@ class ServerGUI:
         config['visitor_ip_blacklist'] = self.visitor_ip_blacklist_var.get().strip()
         config['visitor_redirect_url'] = self.visitor_redirect_url_var.get().strip()
         config['trusted_proxies'] = self.trusted_proxies_var.get().strip()
+        config['tls_enabled'] = bool(self.tls_enabled_var.get())
+        config['tls_certfile'] = self.tls_certfile_var.get().strip()
+        config['tls_keyfile'] = self.tls_keyfile_var.get().strip()
         save_config(config)
         self.log(i18n.t("log_settings_saved"), 'success')
         self.log(i18n.t("log_ip_settings_saved"), 'success')
@@ -1862,7 +1893,17 @@ class ServerGUI:
         sock.bind(('0.0.0.0', port))
         sock.listen(100)
         
-        self.server = await asyncio.start_server(handle_client, sock=sock)
+        # TLS：启用时整个控制/隧道通道加密；证书缺失则拒绝启动（绝不降级明文）
+        ssl_ctx = None
+        tls_cfg = load_config()
+        if tls_cfg.get('tls_enabled'):
+            try:
+                ssl_ctx = build_server_ssl_context(tls_cfg.get('tls_certfile', ''),
+                                                   tls_cfg.get('tls_keyfile', ''))
+            except Exception as e:
+                self.log(f"TLS config error: {e}", 'error')
+                return
+        self.server = await asyncio.start_server(handle_client, sock=sock, ssl=ssl_ctx)
         self.log(i18n.t("log_control_port_open", port=port))
         
         async with self.server:

@@ -91,6 +91,11 @@ TRANSLATIONS = {
         "redirect_hint": "被拒绝的访客将跳转到此URL",
         "trusted_proxies": "可信代理 IP（仅这些来源的 XFF 头可信）:",
         "trusted_proxies_hint": "逗号分隔 IP/CIDR/范围；留空则永不采信 XFF 头",
+        "tls_title": "TLS 加密（保护口令与隧道数据）",
+        "tls_enabled": "启用 TLS",
+        "tls_certfile": "证书文件 (PEM):",
+        "tls_keyfile": "私钥文件 (PEM):",
+        "tls_hint": "启用后客户端也须启用 TLS；证书/私钥缺失时服务拒绝启动",
         
         # 防火墙日志
         "firewall_refresh": "刷新日志",
@@ -245,6 +250,11 @@ TRANSLATIONS = {
         "redirect_hint": "Denied visitors will be redirected to this URL",
         "trusted_proxies": "Trusted Proxy IPs (XFF headers only trusted from these):",
         "trusted_proxies_hint": "Comma-separated IPs/CIDR/ranges; empty = never trust forwarded headers",
+        "tls_title": "TLS (protects tokens and tunneled data)",
+        "tls_enabled": "Enable TLS",
+        "tls_certfile": "Certificate file (PEM):",
+        "tls_keyfile": "Private key file (PEM):",
+        "tls_hint": "Clients must enable TLS too; server refuses to start without cert/key",
         
         # Firewall log
         "firewall_refresh": "Refresh Log",
