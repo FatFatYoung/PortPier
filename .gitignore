@@ -52,3 +52,4 @@ allowed_clients.json
 *.exe
 *.dll
 *.pyd
+dist_new/
