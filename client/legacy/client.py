@@ -17,7 +17,7 @@ import os
 import hashlib
 import base64
 from aiohttp import web
-from common import encode_packet, decode_packet, logger, STREAM_QUEUE_MAXSIZE, build_client_ssl_context
+from common import encode_packet, decode_packet, logger, STREAM_QUEUE_MAXSIZE, build_client_ssl_context, get_max_packet_size
 
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -166,7 +166,8 @@ class Client:
                     break
                 buffer += data
                 while True:
-                    stream_id, packet_data, remaining = decode_packet(buffer)
+                    stream_id, packet_data, remaining = decode_packet(
+                        buffer, get_max_packet_size(config))
                     if stream_id is None:
                         break
                     if stream_id == 0:

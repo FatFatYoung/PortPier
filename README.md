@@ -111,6 +111,7 @@ python gui_client.py
 - 服务端：`tls_enabled: true` + `tls_certfile` / `tls_keyfile`（PEM）；缺证书时拒绝启动，绝不降级明文
 - 客户端：`tls_enabled: true` + 可选 `tls_ca_file`（留空用系统 CA）；`tls_insecure_skip_verify: true` 为显式跳过校验（仍加密不认证）
 - 反向代理部署：`trusted_proxies` 填代理 IP/CIDR/范围，只有这些来源的 XFF 头才可信；留空永不采信
+- `max_packet_size`：单包声明长度上限（字节，默认 1048576 = 1 MiB，超限断连）；两端 config.json 均可配置
 
 ## 📝 更新日志
 

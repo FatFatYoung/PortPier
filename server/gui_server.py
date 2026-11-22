@@ -49,7 +49,7 @@ sys.excepthook = global_exception_handler
 
 # 协议编解码与 TLS 工具（共享模块，含单包长度上限防护）
 from common import (encode_packet, decode_packet, build_server_ssl_context,
-                    STREAM_QUEUE_MAXSIZE)
+                    get_max_packet_size, STREAM_QUEUE_MAXSIZE)
 
 # 路径处理
 # 获取程序所在目录（打包后使用 exe 所在目录）
@@ -214,7 +214,8 @@ def load_config():
             "trusted_proxies": "",     # 可信代理（仅这些来源的 XFF 头可信）
             "tls_enabled": False,
             "tls_certfile": "",
-            "tls_keyfile": ""       # TLS 证书/私钥 (PEM)
+            "tls_keyfile": "",      # TLS 证书/私钥 (PEM)
+            "max_packet_size": 1048576   # 单包声明长度上限（字节，超限断连，默认 1 MiB）
         }
         save_config(default)
         return default
@@ -230,6 +231,7 @@ def load_config():
         cfg.setdefault("tls_enabled", False)
         cfg.setdefault("tls_certfile", "")
         cfg.setdefault("tls_keyfile", "")
+        cfg.setdefault("max_packet_size", 1048576)
         return cfg
 
 def save_config(config):
@@ -626,7 +628,8 @@ class ClientHandler:
                     break
                 buffer += data
                 while True:
-                    stream_id, packet_data, remaining = decode_packet(buffer)
+                    stream_id, packet_data, remaining = decode_packet(
+                        buffer, get_max_packet_size(self.config))
                     if stream_id is None:
                         break
                     buffer = remaining
@@ -1852,7 +1855,8 @@ class ServerGUI:
                     initial_buffer = data
                     # 处理所有数据包
                     while initial_buffer:
-                        stream_id, packet_data, remaining = decode_packet(initial_buffer)
+                        stream_id, packet_data, remaining = decode_packet(
+                            initial_buffer, get_max_packet_size(config))
                         if stream_id is None:
                             break
                         initial_buffer = remaining

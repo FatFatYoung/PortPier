@@ -28,7 +28,7 @@ def encode_packet(stream_id: int, data: bytes) -> bytes:
     return struct.pack(HEADER_FORMAT, stream_id, len(data)) + data
 
 
-def decode_packet(data: bytes):
+def decode_packet(data: bytes, max_len: int = MAX_PACKET_SIZE):
     """从数据中解码出 stream_id, data, 和剩余数据（可能不完整）。
 
     数据不完整时返回 (None, None, data)；声明长度超过 MAX_PACKET_SIZE 时
@@ -37,13 +37,28 @@ def decode_packet(data: bytes):
     if len(data) < HEADER_SIZE:
         return None, None, data
     stream_id, data_len = struct.unpack(HEADER_FORMAT, data[:HEADER_SIZE])
-    if data_len > MAX_PACKET_SIZE:
-        raise ValueError("packet too large: %d bytes (limit %d)" % (data_len, MAX_PACKET_SIZE))
+    if data_len > max_len:
+        raise ValueError("packet too large: %d bytes (limit %d)" % (data_len, max_len))
     if len(data) < HEADER_SIZE + data_len:
         return None, None, data
     packet_data = data[HEADER_SIZE:HEADER_SIZE + data_len]
     remaining = data[HEADER_SIZE + data_len:]
     return stream_id, packet_data, remaining
+
+
+def get_max_packet_size(cfg) -> int:
+    """从配置读取单包长度上限（max_packet_size，字节）。
+
+    缺失或无效时回退默认 MAX_PACKET_SIZE（1 MiB）。
+    """
+    cfg = cfg or {}
+    try:
+        v = int(cfg.get('max_packet_size', MAX_PACKET_SIZE))
+        if v < 1:
+            raise ValueError
+        return v
+    except (TypeError, ValueError):
+        return MAX_PACKET_SIZE
 
 
 def build_server_ssl_context(certfile: str, keyfile: str) -> ssl.SSLContext:

@@ -49,7 +49,7 @@ else:
 
 # 导入通用模块
 from common import (encode_packet, decode_packet, build_client_ssl_context,
-                    STREAM_QUEUE_MAXSIZE)
+                    get_max_packet_size, STREAM_QUEUE_MAXSIZE)
 
 # ==================== 配置管理 ====================
 
@@ -93,7 +93,8 @@ def load_client_config():
             "token": "your_token_here",
             "tls_enabled": False,
             "tls_ca_file": "",
-            "tls_insecure_skip_verify": False
+            "tls_insecure_skip_verify": False,
+            "max_packet_size": 1048576
         }
         save_client_config(default)
         return default
@@ -378,7 +379,8 @@ class Client:
                     break
                 buffer += data
                 while True:
-                    stream_id, packet_data, remaining = decode_packet(buffer)
+                    stream_id, packet_data, remaining = decode_packet(
+                        buffer, get_max_packet_size(self.config))
                     if stream_id is None:
                         break
                     if stream_id == 0:
