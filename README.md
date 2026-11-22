@@ -379,7 +379,7 @@ Add a new check function on the server side; see `is_ip_allowed` for reference.
 
 ## 📝 Changelog
 
-### Unreleased
+### 1.3.0 - 2026-11-22
 
 #### Security
 - 🔒 **Memory exhaustion protection** - declared packet length is capped at 1 MiB; the stream queue is now a bounded queue
@@ -391,7 +391,7 @@ Add a new check function on the server side; see `is_ip_allowed` for reference.
 - 🐛 Fixed gui_client.py failing to start due to an import of the relocated common module
 - 🐛 Fixed a NameError caused by a missing `logging` import on the authentication-failure path
 
-### [1.2.0] - 2026-05-10
+### 1.2.0 - 2026-05-10
 
 #### Changed
 - ✨ **Smoother language switching** - the UI rebuild now carries over the runtime log
@@ -403,7 +403,7 @@ Add a new check function on the server side; see `is_ip_allowed` for reference.
 - 🔧 **UI state management convention** - introduced the "Save-Destroy-Rebuild-Restore" pattern
 - 🔧 **ScrolledText state handling** - fixed the silent failure when inserting history text in read-only mode
 
-### [1.1.0] - 2026-05-08
+### 1.1.0 - 2026-05-08
 
 #### Added
 - 🌐 **English/Chinese bilingual support** - full UI internationalization
@@ -419,7 +419,7 @@ Add a new check function on the server side; see `is_ip_allowed` for reference.
 - 🐛 Fixed the config file path issue on first run
 - 🐛 Fixed the double-window issue at startup
 
-### [1.0.0] - 2026-05-04
+### 1.0.0 - 2026-05-04
 
 #### Added
 - ✨ Server-side visual management UI (tkinter GUI)
