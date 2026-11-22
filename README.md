@@ -1,319 +1,320 @@
-# PortPier - TCP 端口映射工具
+# PortPier - TCP Port Mapping Tool
 
-一个基于 Python 的轻量级 TCP 端口映射/内网穿透工具，支持将本地服务暴露到公网。
+A lightweight Python-based TCP port mapping / NAT traversal tool that exposes local services to the public internet.
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)]()
 [![GitHub Stars](https://img.shields.io/github/stars/FatFatYoung/PortPier.svg)](https://github.com/FatFatYoung/PortPier/stargazers)
 
-## ✨ 功能特性
+## ✨ Features
 
-### 服务端
-- 🖥️ 可视化管理界面（tkinter GUI）
-- 👥 多客户端同时连接
-- 🔐 客户端认证机制（用户名/密码）
-- 📊 实时连接日志
-- 🔥 防火墙日志查看
-- 🛡️ IP 白名单/黑名单访问控制
-- ⚙️ 灵活的端口映射规则配置
-- 🌐 **中英双语支持**（一键切换）
+### Server
+- 🖥️ Visual management UI (tkinter GUI)
+- 👥 Multiple concurrent client connections
+- 🔐 Client authentication (username/password)
+- 📊 Real-time connection logs
+- 🔥 Firewall log viewer
+- 🛡️ IP allowlist / blocklist access control
+- ⚙️ Flexible port mapping rule configuration
+- 🌐 **English/Chinese bilingual support** (one-click switch)
 
-### 客户端
-- 🖥️ 可视化配置界面
-- 🔄 自动重连机制
-- 📝 实时连接日志
-- 🔐 密码保护
-- 💾 配置文件持久化
-- 🌐 **中英双语支持**（一键切换）
+### Client
+- 🖥️ Visual configuration UI
+- 🔄 Automatic reconnection
+- 📝 Real-time connection logs
+- 🔐 Password protection
+- 💾 Persistent configuration
+- 🌐 **English/Chinese bilingual support** (one-click switch)
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 PortPier/
-├── README.md                        # 项目说明（含更新日志/架构/FAQ）
-├── LICENSE                          # MIT 许可证
-├── THIRD_PARTY_NOTICES.md           # 第三方开源组件声明
+├── README.md                        # Project overview (changelog / architecture / FAQ)
+├── LICENSE                          # MIT License
+├── THIRD_PARTY_NOTICES.md           # Third-party open-source component notices
 ├── .gitignore
-├── server/                          # 服务端 (GUI 版本)
-│   ├── gui_server.py                # GUI 管理界面 (推荐)
-│   ├── common.py                    # 共享协议模块 (编解码/包上限/日志)
-│   ├── i18n.py                      # 国际化模块
-│   ├── build.bat                    # 打包脚本
-│   ├── config.example.json          # 配置示例 (含 TLS/trusted_proxies/max_packet_size)
-│   └── legacy/                      # 旧版 Web 管理端 (仅供参考)
+├── server/                          # Server (GUI edition)
+│   ├── gui_server.py                # GUI management UI (recommended)
+│   ├── common.py                    # Shared protocol module (codec / packet cap / logging)
+│   ├── i18n.py                      # Internationalization module
+│   ├── build.bat                    # Packaging script
+│   ├── config.example.json          # Sample config (TLS / trusted_proxies / max_packet_size)
+│   └── legacy/                      # Legacy web console (reference only)
 │       ├── server.py
 │       └── common.py
-└── client/                          # 客户端 (GUI 版本)
-    ├── gui_client.py                # GUI 客户端 (推荐)
-    ├── common.py                    # 共享协议模块 (与服务端一致)
-    ├── i18n.py                      # 国际化模块
-    ├── build.bat                    # 打包脚本
-    ├── client_config.example.json   # 连接配置示例
-    ├── client_rules.example.json    # 映射规则示例
-    └── legacy/                      # 旧版命令行客户端 (仅供参考)
+└── client/                          # Client (GUI edition)
+    ├── gui_client.py                # GUI client (recommended)
+    ├── common.py                    # Shared protocol module (same as server)
+    ├── i18n.py                      # Internationalization module
+    ├── build.bat                    # Packaging script
+    ├── client_config.example.json   # Sample connection config
+    ├── client_rules.example.json    # Sample mapping rules
+    └── legacy/                      # Legacy command-line client (reference only)
         ├── client.py
         └── common.py
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 方式一：使用预编译 EXE（推荐）
+### Option 1: Prebuilt EXE (recommended)
 
-1. 从 [Releases](https://github.com/FatFatYoung/PortPier/releases) 下载最新版本
-2. 解压后双击运行 `portpier_server.exe` 或 `portpier_client.exe`
-3. **无需安装 Python 环境**
+1. Download the latest release from [Releases](https://github.com/FatFatYoung/PortPier/releases)
+2. Extract and double-click `portpier_server.exe` or `portpier_client.exe`
+3. **No Python installation required**
 
-### 方式二：从源码运行
+### Option 2: Run from Source
 
-#### 环境要求
+#### Requirements
 - Python 3.10+
 - Windows 10/11
 
-#### 运行服务端
+#### Run the Server
 ```bash
 cd server
 python gui_server.py
 ```
 
-#### 运行客户端
+#### Run the Client
 ```bash
 cd client
 python gui_client.py
 ```
 
-## 🖥️ 服务端部署
+## 🖥️ Server Deployment
 
-### 1. 启动服务端
+### 1. Start the Server
 
-双击 `portpier_server.exe` 启动服务端。
+Double-click `portpier_server.exe` to start the server.
 
-### 2. 登录
+### 2. Log In
 
-- 默认用户名：`admin`
-- 默认密码：`admin`
+- Default username: `admin`
+- Default password: `admin`
 
-### 3. 配置服务端
+### 3. Configure the Server
 
-在「系统设置」选项卡中：
+In the "System Settings" tab:
 
-1. **控制端口**：客户端连接的端口（默认 8024）
-2. **全局默认端口范围**：允许客户端映射的端口
+1. **Control port**: the port clients connect to (default 8024)
+2. **Global default port range**: the ports clients are allowed to map
 
-### 4. 配置防火墙
+### 4. Configure the Firewall
 
-如果服务器有防火墙，需要开放端口：
+If the server has a firewall, open the required ports:
 
 ```powershell
 New-NetFirewallRule -DisplayName "PortPier" -Direction Inbound -Protocol TCP -LocalPort 8024,10000-20000 -Action Allow
 ```
 
-## 📖 使用说明
+## 📖 Usage
 
-### 服务端配置
+### Server Configuration
 
-1. **启动服务端** - 双击 `portpier_server.exe`
-2. **默认账号** - admin / admin
-3. **配置监听端口** - 默认 8024
-4. **添加客户端** - 在「客户端管理」选项卡中操作
+1. **Start the server** - double-click `portpier_server.exe`
+2. **Default credentials** - admin / admin
+3. **Configure the listen port** - default 8024
+4. **Add clients** - in the "Client Management" tab
 
-### 客户端配置
+### Client Configuration
 
-1. **启动客户端** - 双击 `portpier_client.exe`
-2. **默认密码** - admin
-3. **配置服务器** - 点击「设置」填写服务器信息
-4. **添加映射规则** - 点击「规则」添加端口映射
-5. **连接服务器** - 点击「连接」
+1. **Start the client** - double-click `portpier_client.exe`
+2. **Default password** - admin
+3. **Configure the server** - click "Settings" and fill in the server information
+4. **Add mapping rules** - click "Rules" to add port mappings
+5. **Connect to the server** - click "Connect"
 
-### 语言切换
+### Language Switching
 
-点击界面右上角的语言切换按钮，即可在中文和英文之间切换。语言设置会自动保存。
+Click the language button in the top-right corner of the UI to switch between Chinese and English. The language setting is saved automatically.
 
-## ❓ 常见问题
+## ❓ FAQ
 
-### Q: 连接失败？
+### Q: Connection fails?
 
-- 检查服务器地址和端口是否正确
-- 检查服务器防火墙是否开放端口
-- 检查 Token 是否正确
+- Check that the server address and port are correct
+- Check that the server firewall has the ports open
+- Check that the token is correct
 
-### Q: 端口映射不工作？
+### Q: Port mapping not working?
 
-- 检查本地服务是否正在运行
-- 检查远程端口是否在允许范围内
+- Check that the local service is running
+- Check that the remote port is within the allowed range
 
-### Q: 连接断开？
+### Q: Connection drops?
 
-客户端会自动重连，等待即可。
+The client reconnects automatically; just wait.
 
-## 🛡️ 安全说明
+## 🛡️ Security
 
-- 所有密码使用 PBKDF2 算法加密存储
-- 支持 IP 白名单/黑名单访问控制
-- 支持 TCP Keepalive 防止连接超时
-- 支持 TLS 加密（`tls_enabled`，保护口令与隧道数据）
-- 客户端口令仅存 PBKDF2 哈希，历史明文加载时自动清除
-- X-Forwarded-For / X-Real-Ip 仅在来源为 `trusted_proxies` 时采信，防止伪造绕过 IP 名单
-- 单包长度上限 + 流队列有界，防恶意声明超大包耗尽内存
+- All passwords are stored with PBKDF2 hashing
+- IP allowlist / blocklist access control
+- TCP Keepalive to prevent connection timeouts
+- Optional TLS (`tls_enabled`) protecting credentials and tunnel data
+- Client tokens are stored only as PBKDF2 hashes; legacy plaintext entries are purged on load
+- `X-Forwarded-For` / `X-Real-Ip` are only honored from sources listed in `trusted_proxies`, preventing IP-list bypass via header spoofing
+- Per-packet length cap plus a bounded stream queue, preventing memory exhaustion via malicious oversized length declarations
 
-**TLS 配置（两端 config.json）：**
+**TLS configuration (config.json on both ends):**
 
-- 服务端：`tls_enabled: true` + `tls_certfile` / `tls_keyfile`（PEM）；缺证书时拒绝启动，绝不降级明文
-- 客户端：`tls_enabled: true` + 可选 `tls_ca_file`（留空用系统 CA）；`tls_insecure_skip_verify: true` 为显式跳过校验（仍加密不认证）
-- 反向代理部署：`trusted_proxies` 填代理 IP/CIDR/范围，只有这些来源的 XFF 头才可信；留空永不采信
-- `max_packet_size`：单包声明长度上限（字节，默认 1048576 = 1 MiB，超限断连）；两端 config.json 均可配置
+- Server: `tls_enabled: true` plus `tls_certfile` / `tls_keyfile` (PEM); refuses to start when the certificate is missing, never falls back to plaintext
+- Client: `tls_enabled: true` plus optional `tls_ca_file` (leave empty to use the system CA); `tls_insecure_skip_verify: true` explicitly skips verification (encrypted but unauthenticated)
+- Reverse-proxy deployment: list proxy IPs/CIDR/ranges in `trusted_proxies`; only XFF headers from those sources are trusted; empty means never trust
+- `max_packet_size`: upper bound for declared per-packet length (bytes, default 1048576 = 1 MiB; oversized packets disconnect); configurable in both config.json files
 
-## 🏗️ 系统架构
+## 🏗️ Architecture
 
-### 系统架构
+### System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      公网 (Internet)                         │
+│                          Internet                            │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    服务端 (Server)                            │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │ 控制端口    │  │ 映射端口1   │  │ 映射端口2   │  ...    │
-│  │ (8024)      │  │ (80)        │  │ (443)       │         │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘         │
-│         │                │                │                 │
-│         └────────────────┼────────────────┘                 │
-│                          │                                  │
-│                    ┌─────▼─────┐                            │
-│                    │ Client    │                            │
-│                    │ Handler   │                            │
-│                    └───────────┘                            │
+│                            Server                            │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │ Control     │  │ Mapped 1    │  │ Mapped 2    │   ...    │
+│  │ (8024)      │  │ (80)        │  │ (443)       │          │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘          │
+│         │                │                │                  │
+│         └────────────────┼────────────────┘                  │
+│                          │                                   │
+│                    ┌─────▼─────┐                             │
+│                    │ Client    │                             │
+│                    │ Handler   │                             │
+│                    └───────────┘                             │
 └─────────────────────────────────────────────────────────────┘
                               │
-                              │ TCP 连接
-                              │
+                              │ TCP connection
+                              ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    客户端 (Client)                            │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │ 本地服务1   │  │ 本地服务2   │  │ 本地服务3   │  ...    │
-│  │ (80)        │  │ (443)       │  │ (22)        │         │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘         │
-│         │                │                │                 │
-│         └────────────────┼────────────────┘                 │
-│                          │                                  │
-│                    ┌─────▼─────┐                            │
-│                    │ Proxy     │                            │
-│                    │ Client    │                            │
-│                    └───────────┘                            │
+│                            Client                           │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │ Local Svc 1 │  │ Local Svc 2 │  │ Local Svc 3 │   ...    │
+│  │ (80)        │  │ (443)       │  │ (22)        │          │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘          │
+│         │                │                │                  │
+│         └────────────────┼────────────────┘                  │
+│                          │                                   │
+│                    ┌─────▼─────┐                             │
+│                    │ Proxy     │                             │
+│                    │ Client    │                             │
+│                    └───────────┘                             │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    内网 (Local Network)                       │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │ 本地服务1   │  │ 本地服务2   │  │ 本地服务3   │  ...    │
-│  │ (Web)       │  │ (HTTPS)     │  │ (SSH)       │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│                       Local Network                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │ Web         │  │ HTTPS       │  │ SSH         │   ...    │
+│  │ (80)        │  │ (443)       │  │ (22)        │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 数据流
+### Data Flow
 
-#### 1. 客户端连接流程
+#### 1. Client Connection Flow
 
 ```
-客户端                    服务端
-   │                        │
-   │  1. TCP 连接            │
+   Client                     Server
+   │                          │
+   │  1. TCP connect          │
    │ ────────────────────────>│
-   │                        │
-   │  2. 发送 client_id      │
+   │                          │
+   │  2. Send client_id       │
    │ ────────────────────────>│
-   │                        │
-   │  3. 发送 token          │
+   │                          │
+   │  3. Send token           │
    │ ────────────────────────>│
-   │                        │
-   │  4. 认证结果            │
+   │                          │
+   │  4. Auth result          │
    │ <────────────────────────│
-   │                        │
-   │  5. 发送规则            │
+   │                          │
+   │  5. Send rules           │
    │ ────────────────────────>│
-   │                        │
-   │  6. 心跳保活            │
+   │                          │
+   │  6. Keepalive heartbeat  │
    │ <───────────────────────>│
 ```
 
-#### 2. 数据转发流程
+#### 2. Data Forwarding Flow
 
 ```
-访客                    服务端                    客户端                    本地服务
- │                        │                        │                        │
- │  1. HTTP 请求           │                        │                        │
- │ ────────────────────────>│                        │                        │
- │                        │                        │                        │
- │  2. 分配 stream_id      │                        │                        │
- │                        │ ────────────────────────>│                        │
- │                        │                        │                        │
- │  3. 转发数据            │                        │                        │
- │ ────────────────────────>│ ────────────────────────>│ ────────────────────────>│
- │                        │                        │                        │
- │  4. 返回响应            │                        │                        │
- │ <────────────────────────│ <────────────────────────│ <────────────────────────│
+ Visitor              Server                Client                Local Service
+ │                      │                     │                     │
+ │  1. HTTP request     │                     │                     │
+ │ ────────────────────>│                     │                     │
+ │                      │                     │                     │
+ │                      │  2. Assign stream_id│                     │
+ │                      │ ───────────────────>│                     │
+ │                      │                     │                     │
+ │  3. Forward data     │                     │                     │
+ │ ────────────────────>│ ───────────────────>│ ───────────────────>│
+ │                      │                     │                     │
+ │  4. Return response  │                     │                     │
+ │ <────────────────────│ <───────────────────│ <───────────────────│
+ │                      │                     │                     │
 ```
 
-### 核心组件
+### Core Components
 
-#### 服务端组件
+#### Server Components
 
 1. **GUI Server** (`gui_server.py`)
-   - tkinter 可视化管理界面
-   - 客户端管理
-   - 规则配置
-   - 日志查看
-   - 防火墙日志
-   - IP 访问控制
+   - tkinter visual management UI
+   - Client management
+   - Rule configuration
+   - Log viewer
+   - Firewall logs
+   - IP access control
 
 2. **Protocol Handler** (`common.py`)
-   - 数据包编码/解码
-   - 流量控制
-   - 心跳机制
+   - Packet encoding/decoding
+   - Flow control
+   - Heartbeat mechanism
 
 3. **Client Handler**
-   - 客户端连接管理
-   - 认证验证
-   - 规则同步
-   - 数据转发
+   - Client connection management
+   - Authentication
+   - Rule synchronization
+   - Data forwarding
 
-#### 客户端组件
+#### Client Components
 
 1. **GUI Client** (`gui_client.py`)
-   - tkinter 可视化配置界面
-   - 服务器配置
-   - 规则管理
-   - 日志查看
+   - tkinter visual configuration UI
+   - Server configuration
+   - Rule management
+   - Log viewer
 
 2. **Proxy Client**
-   - 本地端口监听
-   - 数据转发
-   - 自动重连
+   - Local port listening
+   - Data forwarding
+   - Automatic reconnection
 
-### 协议格式
+### Protocol Format
 
-#### 数据包格式
+#### Packet Format
 
 ```
 +──────────────+──────────────+──────────────+
 │ Length (4B)  │ stream_id    │ Payload      │
-│              │ (4B)         │ (变长)       │
+│              │ (4B)         │ (variable)   │
 +──────────────+──────────────+──────────────+
 ```
 
-#### stream_id 含义
+#### stream_id Meaning
 
-| stream_id | 含义 |
-|-----------|------|
-| 0 | 控制消息（心跳、规则操作） |
-| > 0 | 数据流（对应具体的连接） |
+| stream_id | Meaning |
+|-----------|---------|
+| 0 | Control message (heartbeat, rule operations) |
+| > 0 | Data stream (maps to a specific connection) |
 
-#### 控制消息格式
+#### Control Message Format
 
 ```json
 {
@@ -324,190 +325,190 @@ New-NetFirewallRule -DisplayName "PortPier" -Direction Inbound -Protocol TCP -Lo
 }
 ```
 
-### 安全机制
+### Security Mechanisms
 
-#### 1. 认证机制
+#### 1. Authentication
 
-- 客户端连接时发送 client_id 和 token
-- 服务端验证 token 是否匹配
-- token 使用 PBKDF2 算法加密存储
+- The client sends client_id and token on connect
+- The server verifies that the token matches
+- Tokens are stored with PBKDF2 hashing
 
-#### 2. IP 访问控制
+#### 2. IP Access Control
 
-- 客户端连接 IP 白名单/黑名单
-- 访客访问 IP 白名单/黑名单
-- 支持 CIDR、IP 范围、通配符格式
+- Allowlist/blocklist for client connection IPs
+- Allowlist/blocklist for visitor IPs
+- Supports CIDR, IP ranges, and wildcard formats
 
-#### 3. 密码保护
+#### 3. Password Protection
 
-- 客户端 GUI 需要密码登录
-- 密码使用 PBKDF2 算法加密存储
-- 支持修改密码
+- The client GUI requires a password to log in
+- Passwords are stored with PBKDF2 hashing
+- Password change supported
 
-### 性能优化
+### Performance Optimizations
 
-#### 1. 异步架构
+#### 1. Async Architecture
 
-- 使用 Python asyncio 实现异步 I/O
-- 支持高并发连接
+- Asynchronous I/O implemented with Python asyncio
+- High-concurrency connection support
 
-#### 2. 缓冲区优化
+#### 2. Buffer Optimization
 
-- 读取缓冲区：64KB
-- 写入缓冲区：64KB
-- 减少系统调用次数
+- Read buffer: 64KB
+- Write buffer: 64KB
+- Fewer system calls
 
 #### 3. TCP Keepalive
 
-- 开启 TCP Keepalive 防止连接超时
-- 参数：60s 空闲，15s 间隔，5 次重试
+- TCP Keepalive enabled to prevent connection timeouts
+- Parameters: 60s idle, 15s interval, 5 retries
 
-### 扩展性
+### Extensibility
 
-#### 1. 添加新的传输协议
+#### 1. Adding a New Transport Protocol
 
-在 `common.py` 中扩展编码/解码函数。
+Extend the encode/decode functions in `common.py`.
 
-#### 2. 添加新的认证方式
+#### 2. Adding a New Authentication Method
 
-在服务端 `handle_client` 中修改认证逻辑。
+Modify the authentication logic in the server's `handle_client`.
 
-#### 3. 添加新的访问控制
+#### 3. Adding New Access Control
 
-在服务端添加新的检查函数，参考 `is_ip_allowed`。
+Add a new check function on the server side; see `is_ip_allowed` for reference.
 
-## 📝 更新日志
+## 📝 Changelog
 
-本项目的所有重要更改都将记录在此文件。
+All notable changes to this project will be documented in this file.
 
-格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
-并且本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project follows [Semantic Versioning](https://semver.org/lang/en.html).
 
-### [未发布]
+### [Unreleased]
 
-#### 安全
-- 🔒 **内存耗尽防护** - 数据包声明长度设 1 MiB 上限，流队列改为有界队列
-- 🔒 **明文口令清理** - `allowed_clients.json` 不再保存明文 token，历史明文加载时自动清除
-- 🔒 **XFF 伪造防护** - `X-Forwarded-For`/`X-Real-Ip` 仅在来源为 `trusted_proxies` 时采信
-- 🔒 **TLS 加密** - 控制通道与隧道数据可选 TLS（服务端证书/私钥，客户端 CA 校验）
+#### Security
+- 🔒 **Memory exhaustion protection** - declared packet length is capped at 1 MiB; the stream queue is now a bounded queue
+- 🔒 **Plaintext token removal** - `allowed_clients.json` no longer stores plaintext tokens; legacy plaintext entries are purged on load
+- 🔒 **XFF spoofing protection** - `X-Forwarded-For` / `X-Real-Ip` are only honored from sources listed in `trusted_proxies`
+- 🔒 **TLS encryption** - optional TLS for the control channel and tunnel data (server certificate/key, client CA verification)
 
-#### 修复
-- 🐛 修复 gui_client.py 引用已搬移 common 模块导致无法启动的问题
-- 🐛 修复鉴权失败路径 `logging` 未导入导致的 NameError
+#### Fixed
+- 🐛 Fixed gui_client.py failing to start due to an import of the relocated common module
+- 🐛 Fixed a NameError caused by a missing `logging` import on the authentication-failure path
 
 ### [1.2.0] - 2026-05-10
 
-#### 改进
-- ✨ **语言切换体验优化** - 界面重建时自动继承运行日志
-  - 解决了之前切换语言后日志丢失的问题
-  - 服务端：主日志及防火墙日志（拦截/放行）均会刷新并保留历史
-  - 客户端：连接日志平滑过渡，不再清空
+#### Changed
+- ✨ **Smoother language switching** - the UI rebuild now carries over the runtime log
+  - Fixes the previous loss of logs after switching language
+  - Server: the main log and firewall logs (blocked/allowed) are refreshed while keeping history
+  - Client: the connection log transitions smoothly instead of being cleared
 
-#### 技术改进
-- 🔧 **UI 状态管理规范** - 引入 "Save-Destroy-Rebuild-Restore" 模式
-- 🔧 **ScrolledText 状态处理** - 修复只读模式下无法插入历史文本的静默失败问题
+#### Technical
+- 🔧 **UI state management convention** - introduced the "Save-Destroy-Rebuild-Restore" pattern
+- 🔧 **ScrolledText state handling** - fixed the silent failure when inserting history text in read-only mode
 
 ### [1.1.0] - 2026-05-08
 
-#### 新增
-- 🌐 **中英双语支持** - 完整的界面国际化
-  - 服务端和客户端均支持中文/英文切换
-  - 语言切换按钮显示目标语言
-  - 切换语言后界面立即重建
-  - 语言设置自动保存
-- 📝 **日志消息国际化** - 所有连接日志支持中英文
+#### Added
+- 🌐 **English/Chinese bilingual support** - full UI internationalization
+  - Both server and client support Chinese/English switching
+  - The language button shows the target language
+  - The UI rebuilds immediately after switching
+  - The language setting is saved automatically
+- 📝 **Localized log messages** - all connection logs support Chinese and English
 
-#### 修复
-- 🐛 修复语言切换按钮显示逻辑
-- 🐛 修复服务端设置页面滚动问题
-- 🐛 修复首次运行配置文件路径问题
-- 🐛 修复启动时双窗口问题
+#### Fixed
+- 🐛 Fixed the language button display logic
+- 🐛 Fixed scrolling on the server settings page
+- 🐛 Fixed the config file path issue on first run
+- 🐛 Fixed the double-window issue at startup
 
 ### [1.0.0] - 2026-05-04
 
-#### 新增
-- ✨ 服务端可视化管理界面（tkinter GUI）
-- ✨ 客户端可视化配置界面
-- ✨ 多客户端同时连接支持
-- ✨ 客户端认证机制
-- ✨ 实时连接日志
-- ✨ 防火墙日志查看
-- ✨ IP 白名单/黑名单访问控制
-- ✨ 自动重连机制
-- ✨ 单文件 EXE 打包
+#### Added
+- ✨ Server-side visual management UI (tkinter GUI)
+- ✨ Client-side visual configuration UI
+- ✨ Multiple concurrent client connections
+- ✨ Client authentication
+- ✨ Real-time connection logs
+- ✨ Firewall log viewer
+- ✨ IP allowlist/blocklist access control
+- ✨ Automatic reconnection
+- ✨ Single-file EXE packaging
 
-#### 技术特性
-- 基于 Python asyncio 的异步架构
-- TCP Keepalive 防止连接超时
-- 64KB 缓冲区优化传输速度
-- 支持 CIDR、IP 范围、通配符等 IP 格式
+#### Technical Highlights
+- Async architecture based on Python asyncio
+- TCP Keepalive to prevent connection timeouts
+- 64KB buffers for faster transfers
+- CIDR, IP range, and wildcard IP formats
 
-## 🆚 与同类工具对比
+## 🆚 Comparison with Similar Tools
 
-| 特性 | PortPier | frp | ngrok | natpass |
-|------|----------|-----|-------|---------|
-| **语言** | Python | Go | Go | Go |
-| **GUI 界面** | ✅ | ❌ | ❌ | ❌ |
-| **中英双语** | ✅ | ❌ | ✅ | ❌ |
-| **上手难度** | ⭐ 简单 | ⭐⭐ 中等 | ⭐ 简单 | ⭐⭐⭐ 复杂 |
-| **适合人群** | 新手/Windows | 开发者 | 开发者 | 运维 |
-| **私有化部署** | ✅ | ✅ | ❌ | ✅ |
+| Feature | PortPier | frp | ngrok | natpass |
+|---------|----------|-----|-------|---------|
+| **Language** | Python | Go | Go | Go |
+| **GUI** | ✅ | ❌ | ❌ | ❌ |
+| **English/Chinese UI** | ✅ | ❌ | ✅ | ❌ |
+| **Learning curve** | ⭐ Easy | ⭐⭐ Medium | ⭐ Easy | ⭐⭐⭐ Complex |
+| **Target users** | Beginners / Windows | Developers | Developers | Ops |
+| **Self-hosted** | ✅ | ✅ | ❌ | ✅ |
 
-## 🤝 贡献
+## 🤝 Contributing
 
-感谢你对 PortPier 项目的关注！以下是参与贡献的方式。
+Thank you for your interest in PortPier! Here is how you can contribute.
 
-### 🐛 报告 Bug
+### 🐛 Report Bugs
 
-1. 确保 Bug 尚未在 [Issues](https://github.com/FatFatYoung/PortPier/issues) 中报告
-2. 创建新的 Issue，包含：
-   - 清晰的标题和描述
-   - 复现步骤
-   - 期望行为和实际行为
-   - 系统环境信息
+1. Make sure the bug has not already been reported in [Issues](https://github.com/FatFatYoung/PortPier/issues)
+2. Open a new Issue including:
+   - A clear title and description
+   - Steps to reproduce
+   - Expected and actual behavior
+   - System environment information
 
-### 💡 提出建议
+### 💡 Suggest Features
 
-在 [Issues](https://github.com/FatFatYoung/PortPier/issues) 中创建新的 Issue，标记为 `enhancement`。
+Open a new Issue in [Issues](https://github.com/FatFatYoung/PortPier/issues) and label it `enhancement`.
 
-### 🔧 提交代码
+### 🔧 Submit Code
 
-1. Fork 本仓库
-2. 创建分支：`git checkout -b feature/your-feature`
-3. 提交更改：`git commit -m 'Add your feature'`
-4. 推送分支：`git push origin feature/your-feature`
-5. 创建 Pull Request
+1. Fork this repository
+2. Create a branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m 'Add your feature'`
+4. Push the branch: `git push origin feature/your-feature`
+5. Open a Pull Request
 
-#### 代码规范
+#### Code Style
 
-- 使用 Python 3.10+ 语法
-- 遵循 PEP 8 代码风格
-- 添加必要的注释
-- 确保代码能正常运行
+- Use Python 3.10+ syntax
+- Follow PEP 8
+- Add necessary comments
+- Make sure the code runs correctly
 
-### 📝 改进文档
+### 📝 Improve Documentation
 
-- 修正错别字
-- 补充使用说明
-- 添加示例代码
+- Fix typos
+- Supplement usage instructions
+- Add sample code
 
-### 📧 联系方式
+### 📧 Contact
 
-如有问题，请通过以下方式联系：
-- 提交 [Issue](https://github.com/FatFatYoung/PortPier/issues)
-- 邮箱：fafafat@qq.com
+If you have any questions, reach out via:
+- Opening an [Issue](https://github.com/FatFatYoung/PortPier/issues)
+- Email: fafafat@qq.com
 
-## 📄 许可证
+## 📄 License
 
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-第三方开源组件声明请参见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+For third-party open-source component notices, see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-## 📧 联系方式
+## 📧 Contact
 
-- GitHub：[@FatFatYoung](https://github.com/FatFatYoung)
-- 邮箱：fafafat@qq.com
+- GitHub: [@FatFatYoung](https://github.com/FatFatYoung)
+- Email: fafafat@qq.com
 
 ---
 
-⭐ 如果这个项目对你有帮助，请给个 Star 支持一下！
+⭐ If you find this project helpful, please give it a Star!
