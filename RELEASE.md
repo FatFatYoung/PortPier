@@ -5,7 +5,7 @@
 ### 1. 更新版本号
 
 在以下文件中更新版本号：
-- `CHANGELOG.md` - 添加新版本的更新日志
+- `README.md`（Changelog 节）- 添加新版本的更新日志
 - `README.md` - 更新版本信息
 
 ### 2. 构建 EXE 文件
@@ -57,7 +57,7 @@ git push origin v1.1.0
 
 ### 发布前
 - [ ] 更新版本号
-- [ ] 更新 CHANGELOG.md
+- [ ] 更新 README.md 的 Changelog 节
 - [ ] 构建 EXE 文件
 - [ ] 测试所有功能
 
