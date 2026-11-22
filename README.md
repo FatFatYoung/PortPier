@@ -31,21 +31,29 @@
 
 ```
 PortPier/
-├── server/                        # 服务端 (GUI 版本)
-│   ├── gui_server.py             # GUI 管理界面 (推荐)
-│   ├── i18n.py                   # 国际化模块
-│   ├── build.bat                 # 打包脚本
-│   └── legacy/                   # 旧版 Web 管理端 (仅供参考)
+├── README.md                        # 项目说明（含更新日志/架构/FAQ）
+├── LICENSE                          # MIT 许可证
+├── THIRD_PARTY_NOTICES.md           # 第三方开源组件声明
+├── .gitignore
+├── server/                          # 服务端 (GUI 版本)
+│   ├── gui_server.py                # GUI 管理界面 (推荐)
+│   ├── common.py                    # 共享协议模块 (编解码/包上限/日志)
+│   ├── i18n.py                      # 国际化模块
+│   ├── build.bat                    # 打包脚本
+│   ├── config.example.json          # 配置示例 (含 TLS/trusted_proxies/max_packet_size)
+│   └── legacy/                      # 旧版 Web 管理端 (仅供参考)
 │       ├── server.py
 │       └── common.py
-├── client/                        # 客户端 (GUI 版本)
-│   ├── gui_client.py             # GUI 客户端 (推荐)
-│   ├── i18n.py                   # 国际化模块
-│   ├── build.bat                 # 打包脚本
-│   └── legacy/                   # 旧版命令行客户端 (仅供参考)
-│       ├── client.py
-│       └── common.py
-...
+└── client/                          # 客户端 (GUI 版本)
+    ├── gui_client.py                # GUI 客户端 (推荐)
+    ├── common.py                    # 共享协议模块 (与服务端一致)
+    ├── i18n.py                      # 国际化模块
+    ├── build.bat                    # 打包脚本
+    ├── client_config.example.json   # 连接配置示例
+    ├── client_rules.example.json    # 映射规则示例
+    └── legacy/                      # 旧版命令行客户端 (仅供参考)
+        ├── client.py
+        └── common.py
 ```
 
 ## 🚀 快速开始
