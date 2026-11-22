@@ -169,23 +169,23 @@ The client reconnects automatically; just wait.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                          Internet                            │
+│                          Internet                           │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                            Server                            │
+│                            Server                           │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
 │  │ Control     │  │ Mapped 1    │  │ Mapped 2    │   ...    │
 │  │ (8024)      │  │ (80)        │  │ (443)       │          │
 │  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘          │
-│         │                │                │                  │
-│         └────────────────┼────────────────┘                  │
-│                          │                                   │
-│                    ┌─────▼─────┐                             │
-│                    │ Client    │                             │
-│                    │ Handler   │                             │
-│                    └───────────┘                             │
+│         │                │                │                 │
+│         └────────────────┼────────────────┘                 │
+│                          │                                  │
+│                    ┌─────▼─────┐                            │
+│                    │ Client    │                            │
+│                    │ Handler   │                            │
+│                    └───────────┘                            │
 └─────────────────────────────────────────────────────────────┘
                               │
                               │ TCP connection
@@ -196,13 +196,13 @@ The client reconnects automatically; just wait.
 │  │ Local Svc 1 │  │ Local Svc 2 │  │ Local Svc 3 │   ...    │
 │  │ (80)        │  │ (443)       │  │ (22)        │          │
 │  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘          │
-│         │                │                │                  │
-│         └────────────────┼────────────────┘                  │
-│                          │                                   │
-│                    ┌─────▼─────┐                             │
-│                    │ Proxy     │                             │
-│                    │ Client    │                             │
-│                    └───────────┘                             │
+│         │                │                │                 │
+│         └────────────────┼────────────────┘                 │
+│                          │                                  │
+│                    ┌─────▼─────┐                            │
+│                    │ Proxy     │                            │
+│                    │ Client    │                            │
+│                    └───────────┘                            │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -379,12 +379,7 @@ Add a new check function on the server side; see `is_ip_allowed` for reference.
 
 ## 📝 Changelog
 
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project follows [Semantic Versioning](https://semver.org/lang/en.html).
-
-### [Unreleased]
+### Unreleased
 
 #### Security
 - 🔒 **Memory exhaustion protection** - declared packet length is capped at 1 MiB; the stream queue is now a bounded queue
