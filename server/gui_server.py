@@ -381,6 +381,8 @@ class ClientHandler:
         self.log_callback = log_callback or (lambda msg: None)
         self.refresh_callback = refresh_callback or (lambda: None)
         self.connected = True
+        # 运行配置快照（max_packet_size / trusted_proxies 等），_read_loop 与访客链路依赖
+        self.config = load_config()
 
     async def start(self):
         self.read_task = asyncio.create_task(self._read_loop())
